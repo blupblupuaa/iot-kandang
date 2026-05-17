@@ -1,14 +1,11 @@
-// =============================================================
-//  KANDANGSMART — Global JavaScript
-// =============================================================
-
+// Base path dari footer (APP_BASE)
 function appUrl(path) {
     const base = (window.APP_BASE || '').replace(/\/$/, '');
     const file = String(path).replace(/^\//, '');
     return (base ? base + '/' : '/') + file;
 }
 
-// --- Mobile Navbar Toggle ---
+// Navbar mobile
 const navToggle = document.getElementById('navToggle');
 const navLinks  = document.getElementById('navLinks');
 
@@ -16,7 +13,6 @@ if (navToggle && navLinks) {
     navToggle.addEventListener('click', () => {
         navLinks.classList.toggle('open');
     });
-    // Tutup menu saat klik di luar
     document.addEventListener('click', (e) => {
         if (!navToggle.contains(e.target) && !navLinks.contains(e.target)) {
             navLinks.classList.remove('open');
@@ -24,7 +20,7 @@ if (navToggle && navLinks) {
     });
 }
 
-// --- Monitor: AJAX polling sensor (monitor.php) ---
+// Monitor: polling AJAX tanpa reload halaman
 const SENSOR_STATUS_LABEL = {
     normal:  'Normal',
     warning: 'Perhatian',
@@ -178,12 +174,11 @@ function startSensorPolling(intervalMs) {
     }, 1000);
 }
 
-// --- Kirim Kontrol Aktuator (control.php) ---
+// Kontrol aktuator (control.php)
 function sendControl(device, state, toggleEl) {
     const wrapper = toggleEl ? toggleEl.closest('.toggle-wrapper') : null;
     const stateEl = wrapper ? wrapper.querySelector('.toggle-state') : null;
 
-    // Update label langsung (optimistic UI)
     if (stateEl) {
         stateEl.textContent = state ? 'ON' : 'OFF';
         stateEl.className   = 'toggle-state ' + (state ? 'on' : 'off');
@@ -206,7 +201,6 @@ function sendControl(device, state, toggleEl) {
     .catch(() => showToast('Tidak dapat terhubung ke server', 'danger'));
 }
 
-// --- Kirim Threshold (control.php) ---
 function sendThreshold(e) {
     e.preventDefault();
     const form   = e.target;
@@ -229,7 +223,7 @@ function sendThreshold(e) {
     .catch(() => showToast('Tidak dapat terhubung ke server', 'danger'));
 }
 
-// --- Toast Notification ---
+// Notifikasi singkat
 function showToast(message, type = 'success') {
     let container = document.getElementById('toast-container');
     if (!container) {

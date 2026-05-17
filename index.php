@@ -1,17 +1,12 @@
 <?php
-// =============================================================
-//  HALAMAN DEPAN (index.php)
-// =============================================================
 require_once __DIR__ . '/includes/functions.php';
 
 $page_title = 'Beranda';
 $active_nav = 'home';
 
-// Ambil ringkasan data sensor untuk ditampilkan di hero
 $sensor  = get_sensor_data();
 $aktuator = get_actuator_status();
 
-// Hitung jumlah sensor yang bermasalah
 $issues = 0;
 foreach (['suhu','humidity','amonia','cahaya','pakan'] as $key) {
     if (sensor_status($key, $sensor[$key]) !== 'normal') $issues++;
@@ -20,7 +15,6 @@ foreach (['suhu','humidity','amonia','cahaya','pakan'] as $key) {
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<!-- ===== HERO ===== -->
 <section class="hero">
     <span class="hero-tag">🐔 Prototype IoT — ESP32 + TSL2591</span>
     <h1 class="hero-title">
@@ -37,7 +31,6 @@ require_once __DIR__ . '/includes/header.php';
     </div>
 </section>
 
-<!-- ===== STATS RINGKASAN ===== -->
 <div class="page-container" style="padding-top: 0;">
 
     <div class="stats-row">
@@ -76,7 +69,6 @@ require_once __DIR__ . '/includes/header.php';
     </div>
     <?php endif; ?>
 
-    <!-- ===== FITUR ===== -->
     <p class="section-title">Fitur Sistem</p>
 </div>
 

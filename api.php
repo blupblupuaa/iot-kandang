@@ -1,20 +1,15 @@
 <?php
-// =============================================================
-//  API ENDPOINT (api.php)
-//  Dipanggil oleh JavaScript via fetch() — bukan dibuka langsung
-// =============================================================
+// Endpoint JSON untuk fetch() dari browser (POST + action)
 require_once __DIR__ . '/includes/functions.php';
 
 header('Content-Type: application/json');
 
-// Hanya terima POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(['success' => false, 'message' => 'Method not allowed']);
     exit;
 }
 
-// Baca body JSON
 $body = json_decode(file_get_contents('php://input'), true);
 
 if (!$body || !isset($body['action'])) {
@@ -23,10 +18,9 @@ if (!$body || !isset($body['action'])) {
     exit;
 }
 
-// ===== ROUTING ACTION =====
 switch ($body['action']) {
 
-    // --- Ambil data sensor ---
+    // Data sensor + status per kartu (monitor polling)
     case 'sensor':
         $data = get_sensor_data();
         $status = [];
@@ -36,7 +30,7 @@ switch ($body['action']) {
         echo json_encode(['success' => true, 'data' => $data, 'status' => $status]);
         break;
 
-    // --- Kirim kontrol aktuator ---
+    // Kontrol aktuator (kipas, lampu, servo)
     case 'control':
         $device = $body['device'] ?? null;
         $state  = $body['state']  ?? false;
@@ -51,9 +45,8 @@ switch ($body['action']) {
         echo json_encode(['success' => true, 'result' => $result, 'device' => $device, 'state' => $state]);
         break;
 
-    // --- Simpan threshold (opsional: simpan ke file/DB) ---
+    // Simpan batas sensor ke threshold.json
     case 'threshold':
-        // Validasi sederhana
         $keys = ['suhu_min','suhu_max','humidity_min','humidity_max',
                  'amonia_max','cahaya_min','cahaya_max','pakan_min'];
         $payload = [];
@@ -65,7 +58,6 @@ switch ($body['action']) {
             $payload[$k] = (float) $body[$k];
         }
 
-        // Simpan ke file JSON (bisa diganti database)
         $saved = file_put_contents(
             __DIR__ . '/config/threshold.json',
             json_encode($payload, JSON_PRETTY_PRINT)
@@ -77,7 +69,7 @@ switch ($body['action']) {
         ]);
         break;
 
-    // --- Status aktuator ---
+    // Status ON/OFF aktuator
     case 'status':
         $data = get_actuator_status();
         echo json_encode(['success' => true, 'data' => $data]);

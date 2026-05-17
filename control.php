@@ -1,14 +1,11 @@
 <?php
-// =============================================================
-//  HALAMAN KONTROL (control.php)
-// =============================================================
 require_once __DIR__ . '/includes/functions.php';
 
 $page_title = 'Kontrol Perangkat';
 $active_nav = 'control';
 
 $aktuator = get_actuator_status();
-$t        = get_thresholds(); // ambil threshold dinamis
+$t        = get_thresholds();
 
 require_once __DIR__ . '/includes/header.php';
 ?>
@@ -26,11 +23,10 @@ require_once __DIR__ . '/includes/header.php';
     </div>
     <?php endif; ?>
 
-    <!-- ===== KONTROL AKTUATOR ===== -->
+    <!-- Toggle kipas, lampu, servo -->
     <p class="section-title">Aktuator</p>
     <div class="control-grid" style="margin-bottom: 2rem;">
 
-        <!-- Kipas -->
         <div class="control-card">
             <div class="control-card-header">
                 <span class="control-icon">🌀</span>
@@ -52,7 +48,6 @@ require_once __DIR__ . '/includes/header.php';
             </div>
         </div>
 
-        <!-- Lampu -->
         <div class="control-card">
             <div class="control-card-header">
                 <span class="control-icon">💡</span>
@@ -74,7 +69,6 @@ require_once __DIR__ . '/includes/header.php';
             </div>
         </div>
 
-        <!-- Servo -->
         <div class="control-card">
             <div class="control-card-header">
                 <span class="control-icon">⚙️</span>
@@ -102,7 +96,7 @@ require_once __DIR__ . '/includes/header.php';
 
     </div>
 
-    <!-- ===== PENGATURAN THRESHOLD ===== -->
+    <!-- Form threshold → api.php action threshold -->
     <p class="section-title">Pengaturan Threshold</p>
     <div class="card">
         <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:1.5rem;">

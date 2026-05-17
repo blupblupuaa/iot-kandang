@@ -1,14 +1,10 @@
 <?php
-// =============================================================
-//  HELPER FUNCTIONS - Komunikasi ke ESP32 & Data Dummy
-// =============================================================
 require_once __DIR__ . '/../config/config.php';
 
 define('LAST_SENSOR_FILE', __DIR__ . '/../config/last_sensor.json');
+define('THRESHOLD_FILE',   __DIR__ . '/../config/threshold.json');
 
-/**
- * URL path aplikasi (halaman PHP, API, dll.)
- */
+// URL aplikasi & asset
 function url(string $path = ''): string {
     $base = rtrim(BASE_PATH, '/');
     if ($path === '') {
@@ -17,17 +13,10 @@ function url(string $path = ''): string {
     return ($base !== '' ? $base . '/' : '/') . ltrim($path, '/');
 }
 
-/**
- * URL file statis di folder assets/
- */
 function asset(string $path): string {
     return url('assets/' . ltrim($path, '/'));
 }
-define('THRESHOLD_FILE',   __DIR__ . '/../config/threshold.json');
 
-// ============================================================
-//  AMBIL THRESHOLD — dari file JSON jika ada, fallback konstanta
-// ============================================================
 function get_thresholds(): array {
     if (file_exists(THRESHOLD_FILE)) {
         $data = json_decode(file_get_contents(THRESHOLD_FILE), true);
@@ -45,9 +34,6 @@ function get_thresholds(): array {
     ];
 }
 
-// ============================================================
-//  SIMPAN & AMBIL DATA SENSOR TERAKHIR
-// ============================================================
 function save_last_sensor(array $data): void {
     $data['saved_at'] = date('Y-m-d H:i:s');
     file_put_contents(LAST_SENSOR_FILE, json_encode($data));
@@ -59,10 +45,7 @@ function get_last_sensor(): ?array {
     return $data ?: null;
 }
 
-/**
- * Kirim HTTP GET ke ESP32
- * Return: array data atau null jika gagal
- */
+// HTTP ke firmware ESP32
 function esp32_get(string $url): ?array {
     $ch = curl_init($url);
     curl_setopt_array($ch, [
@@ -78,10 +61,6 @@ function esp32_get(string $url): ?array {
     return json_decode($response, true);
 }
 
-/**
- * Kirim HTTP POST ke ESP32
- * Return: array response atau null jika gagal
- */
 function esp32_post(string $url, array $data): ?array {
     $ch = curl_init($url);
     curl_setopt_array($ch, [
@@ -100,22 +79,17 @@ function esp32_post(string $url, array $data): ?array {
     return json_decode($response, true);
 }
 
-/**
- * Ambil data sensor
- * Prioritas: ESP32 → cache terakhir → dummy
- */
+// Prioritas: ESP32 → cache → dummy
 function get_sensor_data(): array {
     if (!USE_DUMMY_DATA) {
-        // 1. Coba ambil dari ESP32
         $data = esp32_get(API_SENSOR);
         if ($data) {
             $data['source']    = 'esp32';
             $data['timestamp'] = date('H:i:s');
-            save_last_sensor($data); // simpan cache
+            save_last_sensor($data);
             return $data;
         }
 
-        // 2. ESP32 offline — pakai data terakhir
         $last = get_last_sensor();
         if ($last) {
             $last['source'] = 'cached';
@@ -123,7 +97,6 @@ function get_sensor_data(): array {
         }
     }
 
-    // 3. Fallback dummy
     return [
         'suhu'      => round(20 + mt_rand(0, 80) / 10, 1),
         'humidity'  => mt_rand(52, 68),
@@ -135,9 +108,6 @@ function get_sensor_data(): array {
     ];
 }
 
-/**
- * Ambil status aktuator — dari ESP32 atau dummy
- */
 function get_actuator_status(): array {
     if (!USE_DUMMY_DATA) {
         $data = esp32_get(API_STATUS);
@@ -152,9 +122,6 @@ function get_actuator_status(): array {
     ];
 }
 
-/**
- * Kirim perintah kontrol ke aktuator
- */
 function send_control(string $device, bool $state): array {
     if (!USE_DUMMY_DATA) {
         $result = esp32_post(API_CONTROL, ['device' => $device, 'state' => $state]);
@@ -164,14 +131,11 @@ function send_control(string $device, bool $state): array {
     return ['success' => true, 'device' => $device, 'state' => $state, 'source' => 'dummy'];
 }
 
-/**
- * Cek status sensor — pakai threshold dinamis dari file JSON
- * Return: 'normal' | 'warning' | 'danger'
- */
+// normal | warning | danger
 function sensor_status(string $type, ?float $value): string {
     if ($value === null) return 'normal';
 
-    $t = get_thresholds(); // ambil threshold dari file, bukan konstanta
+    $t = get_thresholds();
 
     switch ($type) {
         case 'suhu':

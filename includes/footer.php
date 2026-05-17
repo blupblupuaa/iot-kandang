@@ -1,7 +1,5 @@
-    <!-- ===== AKHIR MAIN CONTENT ===== -->
 </main>
 
-<!-- ===== FOOTER ===== -->
 <footer class="footer">
     <div class="footer-container">
         <div class="footer-left">
@@ -16,6 +14,7 @@
 
 <script>window.APP_BASE = <?= json_encode(rtrim(BASE_PATH, '/')) ?>;</script>
 <script src="<?= asset('js/script.js') ?>"></script>
+<?php // Script khusus halaman (mis. monitor) dimuat setelah script.js ?>
 <?php if (!empty($page_script)) echo $page_script; ?>
 </body>
 </html>

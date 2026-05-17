@@ -1,10 +1,7 @@
 <?php
-// =============================================================
-//  HEADER — dipanggil di setiap halaman
-// =============================================================
 require_once __DIR__ . '/../config/config.php';
 
-// Cek status koneksi ESP32 secara aktual
+// Cek koneksi ESP32 untuk indikator navbar
 $esp32_online = false;
 if (!USE_DUMMY_DATA) {
     $ch = curl_init(ESP32_BASE_URL . '/ping');
@@ -19,7 +16,6 @@ if (!USE_DUMMY_DATA) {
     $esp32_online = (!$err && $res);
 }
 
-// Tentukan label & warna status navbar
 if (USE_DUMMY_DATA) {
     $nav_status_class = 'status-dummy';
     $nav_status_label = 'Demo';
@@ -47,7 +43,6 @@ if (USE_DUMMY_DATA) {
 </head>
 <body>
 
-<!-- ===== NAVBAR ===== -->
 <nav class="navbar">
     <div class="nav-container">
         <a href="<?= url('index.php') ?>" class="nav-brand">
@@ -84,5 +79,4 @@ if (USE_DUMMY_DATA) {
     </div>
 </nav>
 
-<!-- ===== KONTEN UTAMA ===== -->
 <main class="main-content">

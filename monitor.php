@@ -1,19 +1,12 @@
 <?php
-// =============================================================
-//  HALAMAN MONITOR (monitor.php)
-// =============================================================
 require_once __DIR__ . '/includes/functions.php';
 
 $page_title = 'Monitor Sensor';
 $active_nav = 'monitor';
 
-// Ambil data sensor
 $sensor = get_sensor_data();
-
-// Ambil threshold dinamis
 $t = get_thresholds();
 
-// Hitung status tiap sensor
 $status = [
     'suhu'     => sensor_status('suhu',     $sensor['suhu']     ?? null),
     'humidity' => sensor_status('humidity', $sensor['humidity'] ?? null),
@@ -22,7 +15,6 @@ $status = [
     'pakan'    => sensor_status('pakan',    $sensor['pakan']    ?? null),
 ];
 
-// Label status
 $status_label = ['normal' => 'Normal', 'warning' => 'Perhatian', 'danger' => 'Bahaya'];
 
 require_once __DIR__ . '/includes/header.php';
@@ -30,7 +22,7 @@ require_once __DIR__ . '/includes/header.php';
 
 <div class="page-container">
 
-    <!-- ===== PAGE HEADER ===== -->
+    <!-- Header: polling countdown & status ESP32 -->
     <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem;">
         <div>
             <h1 class="page-title">◈ Monitor Sensor</h1>
@@ -55,7 +47,7 @@ require_once __DIR__ . '/includes/header.php';
         </div>
     </div>
 
-    <!-- ===== ALERT KONDISI ===== -->
+    <!-- Alert warning/danger (di-update via JS) -->
     <div id="conditionAlerts">
     <?php foreach ($status as $key => $st): ?>
         <?php if ($st === 'danger'): ?>
@@ -70,11 +62,10 @@ require_once __DIR__ . '/includes/header.php';
     <?php endforeach; ?>
     </div>
 
-    <!-- ===== SENSOR CARDS ===== -->
+    <!-- Kartu sensor: data-sensor untuk update polling -->
     <p class="section-title">Pembacaan Sensor</p>
     <div class="sensor-grid" style="margin-bottom: 2rem;">
 
-        <!-- Suhu -->
         <div class="sensor-card status-<?= $status['suhu'] ?>" data-sensor="suhu">
             <span class="sensor-icon">🌡️</span>
             <div class="sensor-label">Suhu (DHT22)</div>
@@ -91,7 +82,6 @@ require_once __DIR__ . '/includes/header.php';
             </div>
         </div>
 
-        <!-- Kelembaban -->
         <div class="sensor-card status-<?= $status['humidity'] ?>" data-sensor="humidity">
             <span class="sensor-icon">💧</span>
             <div class="sensor-label">Kelembaban (DHT22)</div>
@@ -108,7 +98,6 @@ require_once __DIR__ . '/includes/header.php';
             </div>
         </div>
 
-        <!-- Amonia -->
         <div class="sensor-card status-<?= $status['amonia'] ?>" data-sensor="amonia">
             <span class="sensor-icon">☁️</span>
             <div class="sensor-label">Amonia (MQ-135)</div>
@@ -125,7 +114,6 @@ require_once __DIR__ . '/includes/header.php';
             </div>
         </div>
 
-        <!-- Cahaya TSL2591 -->
         <div class="sensor-card status-<?= $status['cahaya'] ?>" data-sensor="cahaya">
             <span class="sensor-icon">🔆</span>
             <div class="sensor-label">Cahaya (TSL2591)</div>
@@ -142,7 +130,6 @@ require_once __DIR__ . '/includes/header.php';
             </div>
         </div>
 
-        <!-- Pakan -->
         <div class="sensor-card status-<?= $status['pakan'] ?>" data-sensor="pakan">
             <span class="sensor-icon">🌾</span>
             <div class="sensor-label">Pakan (HX711)</div>
@@ -161,7 +148,7 @@ require_once __DIR__ . '/includes/header.php';
 
     </div>
 
-    <!-- ===== TABEL HISTORIS ===== -->
+    <!-- Histori sesi (sessionStorage) -->
     <p class="section-title">Riwayat Pembacaan (Sesi Ini)</p>
     <div class="card" style="overflow-x:auto;">
         <table id="historyTable" style="width:100%; border-collapse:collapse; font-family:var(--font-mono); font-size:0.82rem;">
@@ -183,6 +170,7 @@ require_once __DIR__ . '/includes/header.php';
 
 <?php ob_start(); ?>
 <script>
+// Script halaman monitor (dimuat setelah script.js)
 const HISTORY_KEY = 'kandang_history';
 const maxHistory  = 10;
 
@@ -217,7 +205,6 @@ function renderHistory() {
     `).join('');
 }
 
-// Tambah data saat ini ke histori
 const currentData = {
     timestamp: new Date().toLocaleTimeString('id-ID', {
                    hour: '2-digit', minute: '2-digit', second: '2-digit',

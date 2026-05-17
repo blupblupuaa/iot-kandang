@@ -1,14 +1,9 @@
-# Cache / data runtime (berubah terus)
 config/last_sensor.json
-
-# OS & editor
 .DS_Store
 Thumbs.db
 .idea/
 .vscode/
 *.swp
 *~
-
-# Laragon / PHP (jika ada)
 vendor/
 .env

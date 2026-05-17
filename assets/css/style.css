@@ -1,9 +1,4 @@
-/* =============================================================
-   KANDANGSMART — Global Stylesheet
-   Theme: Dark Industrial IoT Dashboard
-   ============================================================= */
-
-/* --- CSS Variables --- */
+﻿/* Variabel tema */
 :root {
     --bg-base:      #080d14;
     --bg-card:      #0f1724;
@@ -36,7 +31,6 @@
     --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.6);
 }
 
-/* --- Reset & Base --- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { scroll-behavior: smooth; }
@@ -51,7 +45,6 @@ body {
     line-height: 1.6;
 }
 
-/* Background grid pattern */
 body::before {
     content: '';
     position: fixed;
@@ -64,7 +57,7 @@ body::before {
     z-index: 0;
 }
 
-/* --- Navbar --- */
+/* Layout: navbar */
 .navbar {
     position: sticky;
     top: 0;
@@ -167,7 +160,7 @@ body::before {
     transition: all 0.3s;
 }
 
-/* --- Main Content --- */
+/* Layout: konten halaman */
 .main-content {
     flex: 1;
     position: relative;
@@ -180,7 +173,6 @@ body::before {
     padding: 2rem 1.5rem;
 }
 
-/* --- Page Header --- */
 .page-header {
     margin-bottom: 2rem;
 }
@@ -196,7 +188,6 @@ body::before {
     margin-top: 0.3rem;
 }
 
-/* --- Cards --- */
 .card {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -206,7 +197,7 @@ body::before {
 }
 .card:hover { border-color: var(--border-light); }
 
-/* --- Sensor Cards --- */
+/* Monitor: kartu sensor */
 .sensor-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -278,13 +269,13 @@ body::before {
 .badge-warning { background: var(--warning-dim); color: var(--warning); }
 .badge-danger  { background: var(--danger-dim);  color: var(--danger); }
 
-/* --- Actuator / Control Cards --- */
 .control-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 1.25rem;
 }
 
+/* Kontrol: aktuator & toggle */
 .control-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -311,7 +302,6 @@ body::before {
     color: var(--text-secondary);
 }
 
-/* Toggle Switch */
 .toggle-wrapper {
     display: flex;
     align-items: center;
@@ -357,7 +347,7 @@ body::before {
 input:checked + .toggle-slider { background: var(--accent); }
 input:checked + .toggle-slider::before { transform: translateX(22px); background: var(--bg-base); }
 
-/* --- Buttons --- */
+/* Form & tombol */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -393,7 +383,6 @@ input:checked + .toggle-slider::before { transform: translateX(22px); background
 }
 .btn-danger:hover { background: var(--danger); color: white; }
 
-/* --- Form Elements --- */
 .form-group { margin-bottom: 1rem; }
 .form-label {
     display: block;
@@ -432,7 +421,6 @@ input:checked + .toggle-slider::before { transform: translateX(22px); background
     white-space: nowrap;
 }
 
-/* --- Alert / Notification --- */
 .alert {
     padding: 0.85rem 1.1rem;
     border-radius: var(--radius-sm);
@@ -447,7 +435,6 @@ input:checked + .toggle-slider::before { transform: translateX(22px); background
 .alert-danger   { background: var(--danger-dim);  border: 1px solid rgba(255,77,109,0.25); color: var(--danger); }
 .alert-info     { background: var(--accent-dim);  border: 1px solid rgba(0,229,160,0.2);  color: var(--text-secondary); }
 
-/* --- Stats / Info Row --- */
 .stats-row {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -475,7 +462,6 @@ input:checked + .toggle-slider::before { transform: translateX(22px); background
     color: var(--accent);
 }
 
-/* --- Section Title --- */
 .section-title {
     font-size: 0.7rem;
     font-family: var(--font-mono);
@@ -494,7 +480,6 @@ input:checked + .toggle-slider::before { transform: translateX(22px); background
     background: var(--border);
 }
 
-/* --- Footer --- */
 .footer {
     border-top: 1px solid var(--border);
     padding: 1rem 1.5rem;
@@ -522,14 +507,12 @@ input:checked + .toggle-slider::before { transform: translateX(22px); background
     color: var(--text-muted);
 }
 
-/* --- Timestamp --- */
 .timestamp {
     font-family: var(--font-mono);
     font-size: 0.75rem;
     color: var(--text-muted);
 }
 
-/* --- Loading Spinner --- */
 .spinner {
     width: 18px; height: 18px;
     border: 2px solid var(--border-light);
@@ -539,7 +522,7 @@ input:checked + .toggle-slider::before { transform: translateX(22px); background
     display: inline-block;
 }
 
-/* --- Hero (index) --- */
+/* Beranda */
 .hero {
     padding: 4rem 1.5rem 2rem;
     max-width: 1280px;
@@ -573,7 +556,6 @@ input:checked + .toggle-slider::before { transform: translateX(22px); background
 }
 .hero-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
 
-/* --- Feature Cards (index) --- */
 .features-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -606,7 +588,6 @@ input:checked + .toggle-slider::before { transform: translateX(22px); background
     line-height: 1.6;
 }
 
-/* --- Refresh badge --- */
 .refresh-badge {
     display: flex;
     align-items: center;
@@ -626,7 +607,6 @@ input:checked + .toggle-slider::before { transform: translateX(22px); background
     animation: pulse 2s infinite;
 }
 
-/* --- Animations --- */
 @keyframes pulse {
     0%, 100% { opacity: 1; }
     50%       { opacity: 0.35; }
@@ -643,7 +623,7 @@ input:checked + .toggle-slider::before { transform: translateX(22px); background
     animation: fadeIn 0.4s ease both;
 }
 
-/* --- Responsive --- */
+/* Responsive */
 @media (max-width: 768px) {
     .nav-toggle { display: flex; }
 
