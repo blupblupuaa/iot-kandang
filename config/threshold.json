@@ -1,0 +1,10 @@
+{
+    "suhu_min": 20.5,
+    "suhu_max": 29,
+    "humidity_min": 52,
+    "humidity_max": 72,
+    "amonia_max": 27,
+    "cahaya_min": 201,
+    "cahaya_max": 801,
+    "pakan_min": 501
+}
