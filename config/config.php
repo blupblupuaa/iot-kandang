@@ -3,7 +3,7 @@ define('SITE_NAME',    'KandangSmart');
 define('SITE_DESC',    'Sistem Monitoring & Kontrol IoT Kandang Ayam');
 define('SITE_VERSION', '1.0.0');
 // '/iot-kandang' = subfolder Laragon | '' = virtual host root | 'auto' = deteksi otomatis
-define('BASE_PATH', '/iot-kandang');
+define('BASE_PATH', 'auto');
 
 define('ESP32_IP',       '192.168.18.38');
 define('ESP32_PORT',     '80');
