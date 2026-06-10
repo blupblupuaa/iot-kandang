@@ -30,8 +30,8 @@ switch ($body['action']) {
             $status[$key] = sensor_status($key, isset($data[$key]) ? (float)$data[$key] : null);
         }
         // Simpan ke database
-        db_save_sensor($data);
-        echo json_encode(['success' => true, 'data' => $data, 'status' => $status]);
+        $saved = db_save_sensor($data);
+        echo json_encode(['success' => true, 'data' => $data, 'status' => $status, 'saved' => $saved]);
         break;
 
     case 'control':
@@ -66,7 +66,8 @@ switch ($body['action']) {
         }
         $saved = file_put_contents(
             __DIR__ . '/config/threshold.json',
-            json_encode($payload, JSON_PRETTY_PRINT)
+            json_encode($payload, JSON_PRETTY_PRINT),
+            LOCK_EX
         );
         echo json_encode([
             'success' => $saved !== false,

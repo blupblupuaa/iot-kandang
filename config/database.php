@@ -4,12 +4,16 @@
 //  Dipanggil via: require_once __DIR__ . '/../config/database.php';
 // ============================================================
 
-define('DB_HOST', '127.0.0.1');
-define('DB_PORT', '3306');
-define('DB_NAME', 'kandangsmart');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_CHAR', 'utf8mb4');
+// Baca file rahasia .env jika tersedia
+$env_path = __DIR__ . '/../.env';
+$env = file_exists($env_path) ? parse_ini_file($env_path) : [];
+
+define('DB_HOST', $env['DB_HOST'] ?? '127.0.0.1');
+define('DB_PORT', $env['DB_PORT'] ?? '3306');
+define('DB_NAME', $env['DB_NAME'] ?? 'kandangsmart');
+define('DB_USER', $env['DB_USER'] ?? 'root');
+define('DB_PASS', $env['DB_PASS'] ?? '');
+define('DB_CHAR', $env['DB_CHAR'] ?? 'utf8mb4');
 
 /**
  * Mengembalikan koneksi PDO (singleton)
@@ -39,11 +43,27 @@ function db_connect(): PDO {
 }
 
 /**
- * Simpan data sensor ke tabel sensor_log
+ * Simpan data sensor ke tabel sensor_log (Dibatasi maksimal 1x per menit)
  */
 function db_save_sensor(array $data): bool {
     $pdo = db_connect();
     if (!$pdo) return false;
+
+    // Cek kapan terakhir kali data disimpan untuk menghindari database bloat
+    try {
+        $stmt_check = $pdo->query("SELECT created_at FROM sensor_log ORDER BY id DESC LIMIT 1");
+        $last_log = $stmt_check->fetchColumn();
+        if ($last_log) {
+            $last_time = strtotime($last_log);
+            $now = time();
+            // Jika belum lewat 60 detik, abaikan penyimpanan (anggap sukses)
+            if (($now - $last_time) < 60) {
+                return true;
+            }
+        }
+    } catch (PDOException $e) {
+        // Jika gagal mengecek, biarkan lanjut mencoba menyimpan
+    }
 
     try {
         $stmt = $pdo->prepare("

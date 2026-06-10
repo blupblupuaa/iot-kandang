@@ -24,4 +24,4 @@ define('THRESHOLD_CAHAYA_MAX',   800);
 define('THRESHOLD_PAKAN_MIN',    500);
 
 define('USE_DUMMY_DATA',    false);
-define('REFRESH_INTERVAL',  5000);
+define('REFRESH_INTERVAL',  1000);

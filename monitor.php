@@ -38,7 +38,7 @@ require_once __DIR__ . '/includes/header.php';
         <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
             <div class="refresh-badge">
                 <span class="refresh-dot"></span>
-                Update dalam <span id="refreshCounter"><?= REFRESH_INTERVAL/1000 ?>s</span>
+                Live
             </div>
             <span class="timestamp" id="sensorTimestamp">Update: <?= $sensor['timestamp'] ?></span>
             <span id="sourceBadge" class="alert <?= $sensor['source'] === 'esp32' ? 'alert-success' : ($sensor['source'] === 'cached' ? 'alert-warning' : 'alert-info') ?>"
@@ -168,7 +168,47 @@ require_once __DIR__ . '/includes/header.php';
 
 <?php ob_start(); ?>
 <script>
-function appendMonitorHistory(data) { /* data disimpan via api.php ke DB */ }
+function appendMonitorHistory(data) { 
+    const tbody = document.querySelector('table tbody');
+    if (!tbody) return;
+
+    // Hapus pesan kosong jika ada
+    const emptyRow = tbody.querySelector('td[colspan="7"]');
+    if (emptyRow) emptyRow.parentElement.remove();
+
+    const now = new Date();
+    const waktu = String(now.getDate()).padStart(2,'0') + '/' + 
+                  String(now.getMonth()+1).padStart(2,'0') + ' ' +
+                  String(now.getHours()).padStart(2,'0') + ':' +
+                  String(now.getMinutes()).padStart(2,'0') + ':' +
+                  String(now.getSeconds()).padStart(2,'0');
+
+    const tr = document.createElement('tr');
+    tr.style.borderBottom = '1px solid var(--border)';
+    tr.style.animation = 'fadeIn 0.5s ease';
+
+    const sourceClass = data.source === 'esp32' ? 'var(--normal-dim)' : 'var(--accent-dim)';
+    const sourceColor = data.source === 'esp32' ? 'var(--normal)' : 'var(--text-secondary)';
+
+    tr.innerHTML = `
+        <td style="padding:0.5rem 0.75rem;color:var(--text-secondary);">${waktu}</td>
+        <td style="padding:0.5rem 0.75rem;text-align:right;">${data.suhu ?? '—'}</td>
+        <td style="padding:0.5rem 0.75rem;text-align:right;">${data.humidity ?? '—'}</td>
+        <td style="padding:0.5rem 0.75rem;text-align:right;">${data.amonia ?? '—'}</td>
+        <td style="padding:0.5rem 0.75rem;text-align:right;">${data.cahaya ?? '—'}</td>
+        <td style="padding:0.5rem 0.75rem;text-align:right;">${data.pakan ?? '—'}</td>
+        <td style="padding:0.5rem 0.75rem;text-align:center;">
+            <span style="font-size:0.7rem;padding:0.15rem 0.5rem;border-radius:999px;background:${sourceClass};color:${sourceColor};">${data.source}</span>
+        </td>
+    `;
+    
+    tbody.insertBefore(tr, tbody.firstChild);
+
+    // Batasi maksimum 20 baris agar tabel tidak kepanjangan
+    if (tbody.children.length > 20) {
+        tbody.lastElementChild.remove();
+    }
+}
 
 startSensorPolling(<?= REFRESH_INTERVAL ?>);
 
