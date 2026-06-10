@@ -4,9 +4,23 @@ require_once __DIR__ . '/../config/config.php';
 define('LAST_SENSOR_FILE', __DIR__ . '/../config/last_sensor.json');
 define('THRESHOLD_FILE',   __DIR__ . '/../config/threshold.json');
 
-// URL aplikasi & asset
+function base_path(): string {
+    static $resolved = null;
+    if ($resolved !== null) return $resolved;
+
+    if (BASE_PATH !== 'auto') {
+        $resolved = rtrim((string) BASE_PATH, '/');
+        return $resolved;
+    }
+
+    $dir = dirname($_SERVER['SCRIPT_NAME'] ?? '/index.php');
+    $dir = str_replace('\\', '/', $dir);
+    $resolved = ($dir === '/' || $dir === '.') ? '' : rtrim($dir, '/');
+    return $resolved;
+}
+
 function url(string $path = ''): string {
-    $base = rtrim(BASE_PATH, '/');
+    $base = base_path();
     if ($path === '') {
         return $base !== '' ? $base . '/' : '/';
     }
@@ -14,7 +28,10 @@ function url(string $path = ''): string {
 }
 
 function asset(string $path): string {
-    return url('assets/' . ltrim($path, '/'));
+    $relative = 'assets/' . ltrim($path, '/');
+    $fullPath = __DIR__ . '/../' . $relative;
+    $version  = file_exists($fullPath) ? (string) filemtime($fullPath) : SITE_VERSION;
+    return url($relative) . '?v=' . $version;
 }
 
 function get_thresholds(): array {

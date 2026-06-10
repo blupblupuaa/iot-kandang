@@ -1,7 +1,6 @@
 <?php
-require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/functions.php';
 
-// Cek koneksi ESP32 untuk indikator navbar
 $esp32_online = false;
 if (!USE_DUMMY_DATA) {
     $ch = curl_init(ESP32_BASE_URL . '/ping');
@@ -36,7 +35,7 @@ if (USE_DUMMY_DATA) {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= asset('css/style.css') ?>">
+    <link rel="stylesheet" href="<?= htmlspecialchars(asset('css/style.css')) ?>">
     <style>
         .status-offline { background: var(--danger); }
     </style>
@@ -58,6 +57,11 @@ if (USE_DUMMY_DATA) {
             <li>
                 <a href="<?= url('index.php') ?>" class="nav-link <?= ($active_nav ?? '') === 'home' ? 'active' : '' ?>">
                     <span class="nav-icon">⬡</span> Beranda
+                </a>
+            </li>
+            <li>
+                <a href="<?= url('profil.php') ?>" class="nav-link <?= ($active_nav ?? '') === 'profil' ? 'active' : '' ?>">
+                    <span class="nav-icon">◉</span> Profil
                 </a>
             </li>
             <li>

@@ -1,6 +1,9 @@
 <?php
-// Endpoint JSON untuk fetch() dari browser (POST + action)
+// ============================================================
+//  API ENDPOINT (api.php)
+// ============================================================
 require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/config/database.php';
 
 header('Content-Type: application/json');
 
@@ -20,17 +23,17 @@ if (!$body || !isset($body['action'])) {
 
 switch ($body['action']) {
 
-    // Data sensor + status per kartu (monitor polling)
     case 'sensor':
         $data = get_sensor_data();
         $status = [];
         foreach (['suhu', 'humidity', 'amonia', 'cahaya', 'pakan'] as $key) {
-            $status[$key] = sensor_status($key, isset($data[$key]) ? (float) $data[$key] : null);
+            $status[$key] = sensor_status($key, isset($data[$key]) ? (float)$data[$key] : null);
         }
+        // Simpan ke database
+        db_save_sensor($data);
         echo json_encode(['success' => true, 'data' => $data, 'status' => $status]);
         break;
 
-    // Kontrol aktuator (kipas, lampu, servo)
     case 'control':
         $device = $body['device'] ?? null;
         $state  = $body['state']  ?? false;
@@ -41,11 +44,15 @@ switch ($body['action']) {
             break;
         }
 
-        $result = send_control($device, (bool) $state);
+        $result  = send_control($device, (bool)$state);
+        $success = $result['success'] ?? true;
+
+        // Simpan log kontrol ke database
+        db_save_kontrol($device, (bool)$state, $success);
+
         echo json_encode(['success' => true, 'result' => $result, 'device' => $device, 'state' => $state]);
         break;
 
-    // Simpan batas sensor ke threshold.json
     case 'threshold':
         $keys = ['suhu_min','suhu_max','humidity_min','humidity_max',
                  'amonia_max','cahaya_min','cahaya_max','pakan_min'];
@@ -55,21 +62,18 @@ switch ($body['action']) {
                 echo json_encode(['success' => false, 'message' => "Nilai $k tidak valid"]);
                 exit;
             }
-            $payload[$k] = (float) $body[$k];
+            $payload[$k] = (float)$body[$k];
         }
-
         $saved = file_put_contents(
             __DIR__ . '/config/threshold.json',
             json_encode($payload, JSON_PRETTY_PRINT)
         );
-
         echo json_encode([
             'success' => $saved !== false,
             'message' => $saved !== false ? 'Threshold disimpan' : 'Gagal menyimpan'
         ]);
         break;
 
-    // Status ON/OFF aktuator
     case 'status':
         $data = get_actuator_status();
         echo json_encode(['success' => true, 'data' => $data]);
