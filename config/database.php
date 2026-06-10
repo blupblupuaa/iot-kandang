@@ -50,16 +50,12 @@ function db_save_sensor(array $data): bool {
     if (!$pdo) return false;
 
     // Cek kapan terakhir kali data disimpan untuk menghindari database bloat
+    // Menggunakan TIMESTAMPDIFF di MySQL agar tidak terganggu perbedaan timezone PHP vs MySQL
     try {
-        $stmt_check = $pdo->query("SELECT created_at FROM sensor_log ORDER BY id DESC LIMIT 1");
-        $last_log = $stmt_check->fetchColumn();
-        if ($last_log) {
-            $last_time = strtotime($last_log);
-            $now = time();
-            // Jika belum lewat 60 detik, abaikan penyimpanan (anggap sukses)
-            if (($now - $last_time) < 60) {
-                return true;
-            }
+        $stmt_check = $pdo->query("SELECT TIMESTAMPDIFF(SECOND, MAX(created_at), NOW()) AS diff FROM sensor_log");
+        $diff = $stmt_check->fetchColumn();
+        if ($diff !== null && $diff !== false && (int)$diff < 60) {
+            return true;
         }
     } catch (PDOException $e) {
         // Jika gagal mengecek, biarkan lanjut mencoba menyimpan
